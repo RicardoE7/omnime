@@ -1,10 +1,10 @@
+import AppShell from "./components/layout/AppShell";
+
 function App() {
   return (
-    <main className="min-h-screen">
-      <h1 className="p-8 text-page-title">
-        OMNIME
-      </h1>
-    </main>
+    <AppShell>
+      <h1 className="text-page-title">Home</h1>
+    </AppShell>
   );
 }
 
