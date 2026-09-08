@@ -1,5 +1,5 @@
 import AppShell from "./components/layout/AppShell";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getHealth } from "./api/client";
 import { SneakPeekModal } from "./components/SneakPeekModal";
 import { BackendWakeup } from "./components/BackendWakeup";
@@ -16,7 +16,14 @@ function App() {
   const [backendState, setBackendState] = useState<BackendState>("loading");
   const [showBackendWakeup, setShowBackendWakeup] = useState(false);
 
+  const backendControllerRef = useRef<AbortController | null>(null);
+
   const checkBackend = useCallback(() => {
+    backendControllerRef.current?.abort();
+
+    const controller = new AbortController();
+    backendControllerRef.current = controller;
+
     setBackendState("loading");
     setShowBackendWakeup(false);
 
@@ -30,11 +37,12 @@ function App() {
     }, 3000);
 
     const failureTimer = window.setTimeout(() => {
+      controller.abort();
       setBackendState("failed");
       setShowBackendWakeup(true);
     }, 90000);
 
-    getHealth()
+    getHealth(controller.signal)
       .then(() => {
         window.clearTimeout(loadingTimer);
         window.clearTimeout(wakingTimer);
@@ -48,26 +56,29 @@ function App() {
         window.clearTimeout(wakingTimer);
         window.clearTimeout(failureTimer);
 
-        setShowBackendWakeup(true);
-        setBackendState("failed");
+        if (!controller.signal.aborted) {
+          setShowBackendWakeup(true);
+          setBackendState("failed");
+        }
       });
 
     return () => {
       window.clearTimeout(loadingTimer);
       window.clearTimeout(wakingTimer);
       window.clearTimeout(failureTimer);
+      controller.abort();
     };
   }, []);
 
   useEffect(() => {
-  const initialCheck = window.setTimeout(() => {
-    checkBackend();
-  }, 0);
+    const initialCheck = window.setTimeout(() => {
+      checkBackend();
+    }, 0);
 
-  return () => {
-    window.clearTimeout(initialCheck);
-  };
-}, [checkBackend]);
+    return () => {
+      window.clearTimeout(initialCheck);
+    };
+  }, [checkBackend]);
 
   function handleEnterBuild() {
     sessionStorage.setItem("omnime-sneak-peek-entered", "true");
