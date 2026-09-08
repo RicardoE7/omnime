@@ -1,11 +1,18 @@
 import { NavLink } from "react-router-dom";
 import { IconUserCircle } from "@tabler/icons-react";
 import { navItems } from "./navigation";
+import omnimeMark from "../../assets/brand/omnime-mark.png";
 
 const Sidebar = () => {
   return (
     <aside className="hidden h-screen w-64 shrink-0 flex-col border-r border-border bg-surface px-4 py-6 lg:sticky lg:top-0 lg:flex">
-      <div className="px-3 pb-8">
+      <div className="flex items-center gap-3 px-3 pb-8">
+        <img
+          src={omnimeMark}
+          alt=""
+          className="h-8 w-8 shrink-0 object-contain"
+        />
+
         <span className="text-xl font-semibold tracking-[0.18em] text-text-primary">
           OMNIME
         </span>
