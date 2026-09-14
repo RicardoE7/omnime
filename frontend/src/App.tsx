@@ -1,8 +1,17 @@
-import AppShell from "./components/layout/AppShell";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getHealth } from "./api/client";
 import { SneakPeekModal } from "./components/SneakPeekModal";
 import { BackendWakeup } from "./components/BackendWakeup";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { ProtectedRoute } from "./auth/ProtectedRoute";
+import { PublicOnlyRoute } from "./auth/PublicOnlyRoute";
+import { RegisterPage } from "./pages/RegisterPage";
+import { OnboardingPage } from "./pages/OnboardingPage";
+import { HomeRoute } from "./auth/HomeRoute";
+import { LoginPage } from "./pages/LoginPage";
+import { AccountPage } from "./pages/AccountPage";
+import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
+import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 
 type BackendState = "loading" | "waking" | "ready" | "failed";
 
@@ -95,9 +104,22 @@ function App() {
         <SneakPeekModal onEnter={handleEnterBuild} />
       )}
 
-      <AppShell>
-        <h1 className="text-page-title">Home</h1>
-      </AppShell>
+      <Routes>
+        <Route element={<PublicOnlyRoute />}>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+        </Route>
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<HomeRoute />} />
+          <Route path="/onboarding" element={<OnboardingPage />} />
+          <Route path="/account" element={<AccountPage />} />
+        </Route>
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </>
   );
 }
