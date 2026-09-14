@@ -48,8 +48,14 @@ export function SneakPeekModal({ onEnter }: SneakPeekModalProps) {
                 <span className="text-accent">✦</span>
 
                 <span className="text-label text-text-primary">
-                  Authentication
+                  Anime Data Integration
                 </span>
+              </div>
+
+              <div className="mt-3 border-t border-border pt-3">
+                <p className="text-caption text-text-muted">
+                  Next up: Search &amp; Add Anime
+                </p>
               </div>
             </div>
 
